@@ -1,0 +1,36 @@
+{
+  "name": "rollup-plugin-inject-env",
+  "version": "0.1.0",
+  "description": "Statically inject environment variables from the dotenv file.",
+  "main": "dist/index.js",
+  "files": [
+    "dist/"
+  ],
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [
+    "rollup-plugin",
+    "environment",
+    "variable",
+    "injection"
+  ],
+  "author": "Mackenzie Clark <mackenzie.a.z.c@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^6.1.0",
+    "magic-string": "^0.25.1",
+    "rollup-pluginutils": "^2.3.3"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-jest": "^23.6.0",
+    "babel-preset-env": "^1.7.0",
+    "jest": "^23.6.0",
+    "regenerator-runtime": "^0.13.1",
+    "rollup": "^0.67.3",
+    "rollup-plugin-auto-external": "^2.0.0",
+    "rollup-plugin-commonjs": "^9.2.0",
+    "rollup-plugin-node-resolve": "^3.4.0"
+  }
+}
