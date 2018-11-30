@@ -1,9 +1,17 @@
 import MagicString from 'magic-string';
 import {createFilter} from 'rollup-pluginutils';
 
-export default function injectEnv(options = {}) {
-  const filter = createFilter(options.include, options.exclude);
+const defaultExcludes = ['node_modules/**'];
 
+export default function injectEnv(options = {}) {
+  const exclude = defaultExcludes;
+  if (Array.isArray(options.exclude)) {
+    exclude.concat(options.exclude);
+  }
+  else if (typeof options.exclude === 'string' || options.exclude instanceof String) {
+    exclude.push(options.exclude);
+  }
+  const filter = createFilter(options.include, exclude);
   let maybeEnvironmentVariables = options.envFilePath
     ? require('dotenv').config({ path: options.envFilePath})
     : require('dotenv').config();
@@ -12,10 +20,11 @@ export default function injectEnv(options = {}) {
   }
   const environmentVariables = maybeEnvironmentVariables.parsed;
   let lookupPairs = [];
+  const quote = '\'';
   for (const key in environmentVariables) {
     if (environmentVariables.hasOwnProperty(key)) {
       const value = environmentVariables[key];
-      lookupPairs.push(["process.env." + key, value]);
+      lookupPairs.push(["process.env." + key, quote + value + quote]);
     }
   }
   return {
@@ -23,13 +32,12 @@ export default function injectEnv(options = {}) {
     transform(code, id) {
       if (!filter(id)) return null;
       let newCode = code;
-      let quote = '\'';
       for (const pairs of lookupPairs) {
         const [key, value] = pairs;
-        newCode = newCode.replace(key, quote + value + quote);
+        newCode = newCode.replace(key, value);
       }
       const magicString = new MagicString(newCode);
-      const result = { code: magicString.toString() };
+      const result = { code: newCode };
       if (options.sourcemap !== false)
         result.map = magicString.generateMap({ hires: true });
       return result;
