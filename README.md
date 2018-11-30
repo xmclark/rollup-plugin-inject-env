@@ -2,7 +2,6 @@
 
 Statically inject variables from the dotenv file. Reuse the familiar `process.env.MY_VAR` substitution token. Environment variables are inserted as strings.
 
-before:
 ```
 // .env
 MY_API_KEY=12345
@@ -12,14 +11,13 @@ const x = process.env.MY_API_KEY;
 
 // generated code
 const x = '12345';
-
 ```
 
 ## usage
 
 Add it to your rollup config plugins list. 
 
-Optionally pass `include` and `exclude` minimatch patterns. 
+Optionally pass `include`, `exclude`, and/or `envFilePath` minimatch patterns in the `options` parameter. 
 
 `node_modules/**` is always ignored.
 
@@ -29,15 +27,19 @@ export default {
   input: 'src/index.ts',
   output: {
     file: 'bundle.js',
-    format: 'iife', // immediately-invoked function expression — suitable for <script> tags
+    format: 'iife',
     sourcemap: true
   },
   plugins: [
-    injectEnv(),
+    injectEnv({
+      // include: "include/sources/minimatch",
+      // exclude: "exclude/sources/minimatch",
+      // envFilePath: "path/to/.env",
+    }),
   ]
 };
 ```
 
 ## motivation
 
-Statically injecting variables is useful for keeping source code separate from insensitive data and configuration. It is not best practice to store sensitive data in source control. It is also not best practice to expose sensitive data on clients (for obvious reasons). Some kinds of data is not sensitive, so we can expose it in our client code. We still do not want it store in version control, so instead use environment variables. We can inject the environment variables at build-time (also called inlining). This rollup plugin solves that problem.
+Code and configuration should be separate. Servers can store configuration in environment variables, but clients (like web browsers) do not always get that luxury. One way to solve the problem is statically injecting configuration into the bundle at compile-time with Rollup. 
